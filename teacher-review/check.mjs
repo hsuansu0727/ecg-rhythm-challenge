@@ -20,5 +20,12 @@ for(const {id} of allowedRhythms){let paths=[];for(let i=0;i<3;i++){
  if(id==='AV3'){assert(regular(gaps(e.p)));assert(regular(gaps(e.q)));assert(e.atrialRate>e.rate);const phase=e.q.map(q=>q.t-e.p.filter(p=>p.t<q.t).at(-1).t);assert(new Set(phase.map(x=>x.toFixed(2))).size>=3);}
  if(id==='PVC'){const n=e.q.findIndex(q=>q.width>=.12);const rr=60/[66,75,84][i];assert(eq(e.q[n+1].t-e.q[n-1].t,2*rr));}
  }assert.equal(new Set(paths).size,3);}
+for(const id of ['AF','AFL','AV3'])for(let i=0;i<3;i++){
+ const f=findings(specimen(id,i));assert(f[0].includes('心房')&&f[0].includes('心室速率'));
+ if(id==='AF')assert(f[3].includes('無法判定心房–心室傳導比例'));
+ if(id==='AFL')assert(f[3].includes(`F:QRS = ${[2,3,4][i]}:1`));
+}
+assert(findings(specimen('AV3',0))[0].includes('72 次／分'));
+assert(findings(specimen('AV3',0))[0].includes('32 次／分'));
 assert.throws(()=>specimen('SVT'));assert.throws(()=>specimen('AF',3));
 fs.writeFileSync('/tmp/ecg-variants.json',JSON.stringify(all));console.log('PASS: 39 distinct single-trace specimens; interval, rate, whitelist, dropped-beat and AV-dissociation checks');
