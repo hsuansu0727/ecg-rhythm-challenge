@@ -1,4 +1,4 @@
-import {allowedRhythms,groups} from './data.mjs?v=8';
+import {allowedRhythms,groups} from './data.mjs?v=10';
 export const ids=allowedRhythms.map(r=>r.id);
 export const missions=[
  {id:'sinus',title:'01 竇性心律',desc:'比較正常、過慢與過快',ids:['NSR','SB','ST']},
@@ -27,3 +27,5 @@ export function normalize(raw){
  out.wrongs=[...new Set((Array.isArray(raw.wrongs)?raw.wrongs:[]).filter(x=>ids.includes(x)))];return out;
 }
 export function record(save,id,correct,streak){if(!ids.includes(id))throw new Error('Invalid rhythm');const s=save.stats[id]??={seen:0,right:0,miss:0};s.seen++;correct?s.right++:s.miss++;save.xp+=correct?10:2;save.bestStreak=Math.max(save.bestStreak,streak);if(!correct&&!save.wrongs.includes(id))save.wrongs.push(id);}
+
+export function rateFromRRBoxes(value){const boxes=Number(value);return Number.isFinite(boxes)&&boxes>0?300/boxes:null;}
