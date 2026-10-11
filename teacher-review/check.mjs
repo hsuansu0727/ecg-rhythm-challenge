@@ -8,7 +8,7 @@ const regular=a=>a.length<2||a.every(x=>eq(x,a[0]));
 const all=[];
 for(const {id} of allowedRhythms){let paths=[];for(let i=0;i<3;i++){
  const e=specimen(id,i),s=svg(e),points=trace(e);all.push({...e,points});paths.push(s);
- assert.equal((s.match(/data-waveform=/g)||[]).length,1);assert(!s.includes('<text'));assert.equal(findings(e).length,5);
+ assert.equal((s.match(/data-waveform=/g)||[]).length,1);assert(!s.includes('<text'));assert.equal(findings(e).length,6);
  assert(points.every(([x,y])=>Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1000&&y>0&&y<180));
  if(['NSR','SB','ST','AV1'].includes(id)){assert(regular(gaps(e.p)));assert(regular(gaps(e.q)));assert(e.pr.every(p=>eq(p,e.pr[0])));}
  if(id==='NSR')assert(e.rate>=60&&e.rate<=100);if(id==='SB')assert(e.rate<60);if(id==='ST'||id==='VT')assert(e.rate>100);
@@ -22,8 +22,8 @@ for(const {id} of allowedRhythms){let paths=[];for(let i=0;i<3;i++){
  }assert.equal(new Set(paths).size,3);}
 for(const id of ['AF','AFL','AV3'])for(let i=0;i<3;i++){
  const f=findings(specimen(id,i));assert(f[0].includes('心房')&&f[0].includes('心室速率'));
- if(id==='AF')assert(f[1].includes('無明確 P')&&f[1].includes('無法判定'));
- if(id==='AFL')assert(f[1].includes(`${[2,3,4][i]} 個對一個 QRS`));
+ if(id==='AF')assert(f[2].includes('無明確 P')&&f[5].includes('無法判定'));
+ if(id==='AFL')assert(f[5].includes(`${[2,3,4][i]} 個對一個 QRS`));
 }
 assert(findings(specimen('AV3',0))[0].includes('72 次／分'));
 assert(findings(specimen('AV3',0))[0].includes('32 次／分'));

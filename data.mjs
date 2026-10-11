@@ -17,14 +17,14 @@ const groups={NSR:['SB','ST','AV1'],SB:['NSR','ST','AV1'],ST:['AFL','NSR','AF'],
 function getFindings(id){
  const m={NSR:['正常（60–100 bpm）','PP、RR 規則','P wave 可識別；QRS 窄（< 0.12 sec；< 3 小格）；PR 正常','每個 P wave 後都有一個 QRS'],SB:['慢（< 60 bpm）','PP、RR 規則','P wave 可識別；QRS 窄；PR 正常','每個 P wave 後都有一個 QRS'],ST:['快（> 100 bpm）','PP、RR 規則','P wave 可識別；QRS 窄；PR 正常','每個 P wave 後都有一個 QRS'],PAC:['基礎心率通常正常','因提前心房搏動而不規則','提前 P wave 形態不同；QRS 窄；PR 可改變','提前 P wave 後通常仍接一個 QRS'],AFL:['心室率依 AV 傳導比例而定','心房活動規則；RR 常規則','可見鋸齒狀 flutter waves；QRS 窄；PR 不適用','多個 flutter waves 對應一個 QRS，可呈固定比例'],AF:['心室率可快、慢或正常','RR 不規則且不規則（irregularly irregular）','無可識別正常 P wave；QRS 通常窄；PR 無法量測','無明確 P，無法判定關係'],PVC:['基礎心率依原始節律而定','因 PVC 提前出現而不規則','PVC 前通常無正常 P wave；QRS 寬且怪異；PR 不適用','提前出現一個寬 QRS，之後常有代償性停頓'],VT:['快，通常 > 100 bpm','通常規則或接近規則','P wave 多不易識別／可見 AV dissociation；QRS 寬；PR 不適用','連續出現 ≥3 個寬 QRS 的心室搏動'],VF:['無有效可判讀心率','完全不規則','無可識別 P wave、QRS 或 PR interval','無組織化 P–QRS 關係'],AV1:['通常正常或依基礎竇性心律而定','PP、RR 通常規則','P wave 可識別；QRS 通常窄；PR 延長且固定','每個 P wave 後都有 QRS'],AV2I:['通常正常或稍慢','PP 規則；RR 因 dropped QRS 而不規則','P wave 可識別；QRS 通常窄；PR 逐漸延長','PR 漸長後出現 P wave 未接 QRS，循環重複'],AV2II:['通常正常或稍慢','PP 規則；RR 因 dropped QRS 而不規則','P wave 可識別；QRS 可窄或寬；已傳導搏動的 PR 固定','突然有 P wave 未接 QRS'],AV3:['通常慢（逃脫心律）','PP 規則；RR 規則，但兩者彼此獨立','P wave 可識別；QRS 可寬或窄；PR 不固定','P wave 與 QRS 沒有固定關係（AV dissociation）']};const a=m[id];
  const rate={NSR:'心房、心室：正常範圍（60–100 次／分）',SB:'心房、心室：慢（<60 次／分）',ST:'心房、心室：快（>100 次／分）',PAC:'基礎速率通常正常；提早搏動改變心房、心室間隔',PVC:'心房看基礎 P 波；心室需計入提早搏動與停頓',AFL:'心房快；心室速率依傳導比例而定',AF:'心房活動快速紊亂，無固定 PP；心室可慢、正常或快',VT:'心房率：P 不明確時無法計算；心室快（通常 >100 次／分）',VF:'心房、心室速率均無法由可辨識波形計算',AV1:'心房、心室速率相同，依基礎竇性速率而定',AV2I:'心房依基礎速率；心室因 QRS 脫落而較慢',AV2II:'心房依基礎速率；心室因 QRS 脫落而較慢',AV3:'心房率高於心室率；心室通常慢'}[id];
- return fiveFindings(rate,a[1],a[2],a[3],id);
+ return sixFindings(rate,a[1],a[2],a[3],id);
 }
 
 allowedRhythms.find(r=>r.id==='PAC').name='APC / PAC';
 const imageMap={NSR:'nsr',SB:'sb',ST:'st',PAC:'pac',AFL:'afl',AF:'af',PVC:'pvc',VT:'vt',VF:'vf',AV1:'av1',AV2I:'av2i',AV2II:'av2ii',AV3:'av3'};
 export {allowedRhythms,groups,getFindings,imageMap};
 
-export function fiveFindings(rate,regularity,combined,relation,id){
+export function sixFindings(rate,regularity,combined,relation,id){
  const parts=combined.split('；');
  let p=parts[0],qrs=parts.find(s=>/^(QRS|寬 QRS)/.test(s)),pr=parts.find(s=>s.includes('PR'));
  if(id==='PVC'&&parts[0].startsWith('寬 QRS'))p=parts[1];
@@ -32,5 +32,5 @@ export function fiveFindings(rate,regularity,combined,relation,id){
  if(id==='PVC'){p='基礎 P 可見；提早寬 QRS 前無傳導 P';qrs='寬窄都有：基礎搏動窄，提早搏動寬';pr='基礎搏動 PR 正常且固定；提早寬 QRS 的 PR 不適用';}
  if(id==='VF'){p='P 無法辨識';qrs='QRS 無法辨識';pr='PR 無法量測';}
  if(id==='AV3')pr='P、QRS 各自獨立；無固定傳導 PR';
- return [`① 速率：${rate}`,`② P 波與關係：${p}；${relation}`,`③ QRS：${qrs?.replace(/^QRS[： ]*/, '')??'無法判定'}`,`④ PR：${pr?.replace(/^PR[： ]*/, '')??'無法量測'}`,`⑤ 規則性：${regularity}`];
+ return [`① 速率：${rate}`,`② 規則：${regularity}`,`③ P 波：${p}`,`④ QRS：${qrs?.replace(/^QRS[： ]*/, '')??'無法判定'}`,`⑤ PR：${pr?.replace(/^PR[： ]*/, '')??'無法量測'}`,`⑥ P 波與 QRS 關係：${relation}`];
 }
