@@ -1,8 +1,8 @@
-import {allowedRhythms} from '../data.mjs?v=10';
-import {specimen,svg,findings} from './waveforms.mjs?v=10';
+import {allowedRhythms} from '../data.mjs?v=11';
+import {specimen,svg,findings} from './waveforms.mjs?v=11';
 const select=document.querySelector('#rhythm'),content=document.querySelector('#content');
 let all=false,fit=false;
-select.innerHTML=allowedRhythms.map(x=>`<option value="${x.id}">${x.name} · ${x.zh}</option>`).join('');select.value='AF';
+select.innerHTML=allowedRhythms.map(x=>`<option value="${x.id}">${x.name} · ${x.zh}</option>`).join('');select.value=allowedRhythms.some(x=>x.id===new URLSearchParams(location.search).get('rhythm'))?new URLSearchParams(location.search).get('rhythm'):'AF';
 export const observations=[
  ['① 心房',['尚未判讀','慢（<60）','正常範圍（60–100）','快（>100）','無法計算']],
  ['① 心室',['尚未判讀','慢（<60）','正常範圍（60–100）','快（>100）','無法計算']],

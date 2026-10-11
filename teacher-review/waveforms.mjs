@@ -1,10 +1,10 @@
 // Deterministic teaching simulations. Teacher review required before quiz use.
 // Timeline: 10 s, 100 SVG units/s; one small square = .04 s / .1 mV.
-import {rateFromRRBoxes} from '../core.mjs?v=10';
-import {allowedRhythms,sixFindings} from '../data.mjs?v=10';
+import {rateFromRRBoxes} from '../core.mjs?v=11';
+import {allowedRhythms,sixFindings} from '../data.mjs?v=11';
 const valid=new Set(allowedRhythms.map(x=>x.id));
 export const duration=10, scale=100, gain=40;
-const rates={NSR:[66,78,90],SB:[42,48,54],ST:[110,125,140],PAC:[72,80,88],PVC:[66,75,84],VT:[140,165,190]};
+const rates={PSVT:[150,180,210],NSR:[66,78,90],SB:[42,48,54],ST:[110,125,140],PAC:[72,80,88],PVC:[66,75,84],VT:[140,165,190]};
 const seq=(start,period,end=10.5)=>{const a=[];for(let t=start;t<end;t+=period)a.push(t);return a;};
 const round=x=>Math.round(x*1000)/1000;
 export function specimen(id,index=0){
@@ -17,6 +17,9 @@ export function specimen(id,index=0){
   e.nominalRate=rates[id][index];const rr=60/e.nominalRate,pr=[.16,.18,.14][index];
   seq(.16,rr).forEach(t=>conduct(t,pr,[.08,.09,.07][index]));
   e.description=`心率 ${e.nominalRate} bpm；PR ${pr.toFixed(2)} 秒；QRS 寬度略有差異`;
+ }else if(id==='PSVT'){
+  e.nominalRate=rates.PSVT[index];seq(.18,60/e.nominalRate).forEach(t=>q(t,[.09,.08,.07][index],[.95,1.05,1.1][index]));
+  e.description=`${e.nominalRate} bpm；RR 規則；QRS ${[.09,.08,.07][index]} 秒；典型 P 與 QRS 重疊、無獨立可辨識 P 的教學示意。短圖不顯示突然起止，不能由此確認發作型態或特定機轉。`;
  }else if(id==='PAC'||id==='PVC'){
   const rr=60/rates[id][index],pos=[3,5,7][index],coupling=rr*[.58,.62,.55][index];
   const base=seq(.16,rr),previous=base[pos-1],early=previous+coupling;
@@ -77,7 +80,7 @@ export function voltage(e,t){
  for(const p of e.p)v+=bump(t,p.t,p.width,p.amp);
  for(const q of e.q){const wide=q.width>=.12;
   v+=q.amp*q.polarity*polygon((t-q.t)/q.width,wide?[[0,0],[.15,-.1],[.38,1],[.60,.65],[.84,-.55],[1,0]]:[[0,0],[.16,-.12],[.40,1],[.70,-.30],[1,0]]);
-  const fast=e.id==='VT'||e.id==='ST'||(e.id==='AF'&&e.index===2);
+  const fast=e.id==='PSVT'||e.id==='VT'||e.id==='ST'||(e.id==='AF'&&e.index===2);
   v+=bump(t,q.t+q.width+.05,fast?.13:.19,(wide?-.26:.28)*q.polarity);
  }
  return v;
@@ -92,11 +95,11 @@ export function findings(e){
  let atrial=ar?`心房速率約 ${Math.round(ar)} 次／分（${speed(ar)}，看 P／心房波）`:'心房率：無法計算';
  if(e.id==='AF')atrial='心房：快速、紊亂，無固定 PP 可計算';
  if(e.id==='PVC')atrial=`基礎竇性心房速率 ${rates.PVC[e.index]} 次／分；心房率看 P，不以提早 QRS 計數`;
- const regular=['NSR','SB','ST','AFL','VT','AV1','AV3'].includes(e.id);
+ const regular=['NSR','SB','ST','AFL','VT','PSVT','AV1','AV3'].includes(e.id);
  const calculation=regular&&hr?`；300 ÷ ${Math.round(e.rrBoxes*100)/100} 大格 ≈ ${hr} 次／分`:'';
  const ventricular=hr?`心室速率約 ${hr} 次／分（${speed(hr)}，看 QRS）${calculation}${regular?'':'；RR 不規則，此數值為多個 RR 的平均速率估計，勿用單一 RR 代表整段'}`:'心室率：無 QRS，無法計算';
  const rate=`${atrial}；${ventricular}`;
- const map={NSR:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],SB:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],ST:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],PAC:['提早搏動打斷 PP、RR 規則性','提早 P 形態不同；QRS 窄；提早搏動 PR 可不同','提早 P 後接窄 QRS'],PVC:['提早搏動及停頓使 RR 不規則','寬 QRS ≥ 3 小格；其前無正常傳導 P；該搏動 PR 不適用','原竇性心搏之間插入一個提早寬 QRS'],AFL:['心房活動規則；此版本 RR 規則','鋸齒狀心房波；QRS 窄；不是正常 P，PR 不適用',`規則鋸齒波，${e.ratio} 個對一個 QRS（${e.ratio}:1）`],AF:['RR 完全不規則，無重複長短模式','無可識別正常 P；QRS 窄；PR 無法量測','無明確 P，無法判定關係'],VT:['RR 規則','P 不易辨識；QRS ≥ 3 小格；PR 無法量測','連續寬 QRS；此段未畫可辨識 P，不以此斷言 AV 分離'],VF:['波形紊亂；無 PP／RR 可量測','P、QRS 無法辨識；PR 不適用','無組織化 P–QRS 關係'],AV1:['PP、RR 規則','P 可識別；QRS 窄；PR > 0.20 秒且固定','每一 P 後都有 QRS'],AV2I:['PP 規則；RR 分組而不規則','P 可識別；QRS 窄；PR 從左往右逐漸延長','PR 漸長後有 P 未接 QRS；下一週期 PR 變短'],AV2II:['PP 規則；QRS 脫落造成 RR 長間隔',`P 可識別；此版本 QRS ${e.index===0?'窄（<3 小格）':'寬（≥3 小格）'}；已傳導 PR 固定`,'突然一個 P 未接 QRS，沒有先逐漸延長 PR'],AV3:['PP、RR 各自規則，速率不同',`P 可識別（部分重疊）；此版本 QRS ${e.index===2?'窄（<3 小格）':'寬（≥3 小格）'}；PR 沒有固定值`,'P、QRS 各走各的']};
+ const map={PSVT:['RR 規則；P 不明確，PP 無法量測','P 與 QRS 重疊，無獨立可辨識 P；QRS 窄；PR 無法量測','P 不明確，表面圖無法判定；不等於房室分離'],NSR:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],SB:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],ST:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],PAC:['提早搏動打斷 PP、RR 規則性','提早 P 形態不同；QRS 窄；提早搏動 PR 可不同','提早 P 後接窄 QRS'],PVC:['提早搏動及停頓使 RR 不規則','寬 QRS ≥ 3 小格；其前無正常傳導 P；該搏動 PR 不適用','原竇性心搏之間插入一個提早寬 QRS'],AFL:['心房活動規則；此版本 RR 規則','鋸齒狀心房波；QRS 窄；不是正常 P，PR 不適用',`規則鋸齒波，${e.ratio} 個對一個 QRS（${e.ratio}:1）`],AF:['RR 完全不規則，無重複長短模式','無可識別正常 P；QRS 窄；PR 無法量測','無明確 P，無法判定關係'],VT:['RR 規則','P 不易辨識；QRS ≥ 3 小格；PR 無法量測','連續寬 QRS；此段未畫可辨識 P，不以此斷言 AV 分離'],VF:['波形紊亂；無 PP／RR 可量測','P、QRS 無法辨識；PR 不適用','無組織化 P–QRS 關係'],AV1:['PP、RR 規則','P 可識別；QRS 窄；PR > 0.20 秒且固定','每一 P 後都有 QRS'],AV2I:['PP 規則；RR 分組而不規則','P 可識別；QRS 窄；PR 從左往右逐漸延長','PR 漸長後有 P 未接 QRS；下一週期 PR 變短'],AV2II:['PP 規則；QRS 脫落造成 RR 長間隔',`P 可識別；此版本 QRS ${e.index===0?'窄（<3 小格）':'寬（≥3 小格）'}；已傳導 PR 固定`,'突然一個 P 未接 QRS，沒有先逐漸延長 PR'],AV3:['PP、RR 各自規則，速率不同',`P 可識別（部分重疊）；此版本 QRS ${e.index===2?'窄（<3 小格）':'寬（≥3 小格）'}；PR 沒有固定值`,'P、QRS 各走各的']};
  const a=map[e.id];
  const summary=sixFindings(rate,a[0],a[1],a[2],e.id);
  const widths=new Set(e.q.filter(q=>q.t>=0&&q.t+q.width<=duration).map(q=>q.width<.12?'窄':'寬'));

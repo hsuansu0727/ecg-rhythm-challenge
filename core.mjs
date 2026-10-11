@@ -1,5 +1,5 @@
-import {allowedRhythms,groups} from './data.mjs?v=10';
-export const ids=allowedRhythms.map(r=>r.id);
+import {allowedRhythms,groups} from './data.mjs?v=11';
+export const ids=allowedRhythms.filter(r=>r.approved!==false).map(r=>r.id);
 export const missions=[
  {id:'sinus',title:'01 竇性心律',desc:'比較正常、過慢與過快',ids:['NSR','SB','ST']},
  {id:'early',title:'02 提早出現的心搏',desc:'辨認 APC 與 VPC',ids:['PAC','PVC']},
