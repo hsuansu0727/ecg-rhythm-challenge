@@ -1,4 +1,4 @@
-import {allowedRhythms,groups} from './data.mjs?v=13';
+import {allowedRhythms,groups} from './data.mjs?v=14';
 export const ids=allowedRhythms.filter(r=>r.approved!==false).map(r=>r.id);
 export const missions=[
  {id:'sinus',title:'01 竇性心律',desc:'比較正常、過慢與過快',ids:['NSR','SB','ST']},
@@ -12,7 +12,7 @@ export function question(id,level='intermediate'){
  if(!ids.includes(id))throw new Error('Rhythm outside allowedRhythms');
  const similar=groups[id].filter(x=>ids.includes(x)&&x!==id);
  let distractors;if(level==='beginner')distractors=shuffle(ids.filter(x=>x!==id)).slice(0,3);else if(level==='intermediate'){const two=shuffle(similar).slice(0,2);distractors=[...two,shuffle(ids.filter(x=>x!==id&&!two.includes(x)))[0]];}else distractors=similar.slice(0,3);
- return {id,options:shuffle([id,...distractors])};
+ return {id,variant:id==='PSVT'?Math.floor(Math.random()*3):0,options:shuffle([id,...distractors])};
 }
 export function deck(pool,n,level){
  pool=[...new Set(pool)].filter(id=>ids.includes(id));if(!pool.length)throw new Error('Empty rhythm pool');

@@ -1,5 +1,5 @@
-import {allowedRhythms} from '../data.mjs?v=13';
-import {specimen,svg,findings} from './waveforms.mjs?v=13';
+import {allowedRhythms} from '../data.mjs?v=14';
+import {specimen,svg,findings} from './waveforms.mjs?v=14';
 const select=document.querySelector('#rhythm'),content=document.querySelector('#content');
 let all=false,fit=false;
 select.innerHTML=allowedRhythms.map(x=>`<option value="${x.id}">${x.name} · ${x.zh}</option>`).join('');select.value=allowedRhythms.some(x=>x.id===new URLSearchParams(location.search).get('rhythm'))?new URLSearchParams(location.search).get('rhythm'):'AF';
