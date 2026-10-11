@@ -1,11 +1,10 @@
-import {allowedRhythms,groups} from './data.mjs?v=14';
+import {allowedRhythms,groups} from './data.mjs?v=15';
 export const ids=allowedRhythms.filter(r=>r.approved!==false).map(r=>r.id);
 export const missions=[
- {id:'sinus',title:'01 竇性心律',desc:'比較正常、過慢與過快',ids:['NSR','SB','ST']},
- {id:'early',title:'02 提早出現的心搏',desc:'辨認 APC 與 VPC',ids:['PAC','PVC']},
- {id:'atrial',title:'03 心房節律',desc:'比較心房撲動與顫動',ids:['AFL','AF']},
- {id:'ventricular',title:'04 心室節律',desc:'比較 VT 與 VF',ids:['VT','VF']},
- {id:'block',title:'05 房室傳導',desc:'看 PR 變化與 P–QRS 關係',ids:['AV1','AV2I','AV2II','AV3']}
+ {id:'sinus',title:'01 竇性心律',desc:'NSR、SB、ST',ids:['NSR','SB','ST']},
+ {id:'atrial',title:'02 心房心律',desc:'APC、PSVT、AFL、A-fib',ids:['PAC','PSVT','AFL','AF']},
+ {id:'ventricular',title:'03 心室心律',desc:'VPC、VT、VF',ids:['PVC','VT','VF']},
+ {id:'block',title:'04 房室傳導阻滯',desc:'第一度、第二度 Type I／II、第三度 AV block',ids:['AV1','AV2I','AV2II','AV3']}
 ];
 export function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 export function question(id,level='intermediate'){

@@ -1,5 +1,5 @@
-import {allowedRhythms} from './data.mjs?v=14';
-import {shuffle} from './core.mjs?v=14';
+import {allowedRhythms} from './data.mjs?v=15';
+import {shuffle} from './core.mjs?v=15';
 export const sources={
 一般:{title:'AHA：心律不整評估與治療原則',url:'https://www.heart.org/en/health-topics/arrhythmia/prevention--treatment-of-arrhythmia'},
 竇速:{title:'AHA：Sinus Tachycardia 的原因與治療',url:'https://www.heart.org/en/health-topics/arrhythmia/about-arrhythmia/tachycardia--fast-heart-rate'},

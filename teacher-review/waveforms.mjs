@@ -1,7 +1,7 @@
 // Deterministic teaching simulations. Teacher review required before quiz use.
 // Timeline: 10 s, 100 SVG units/s; one small square = .04 s / .1 mV.
-import {rateFromRRBoxes} from '../core.mjs?v=14';
-import {allowedRhythms,sixFindings} from '../data.mjs?v=14';
+import {rateFromRRBoxes} from '../core.mjs?v=15';
+import {allowedRhythms,sixFindings} from '../data.mjs?v=15';
 const valid=new Set(allowedRhythms.map(x=>x.id));
 export const duration=10, scale=100, gain=40;
 const rates={PSVT:[150,180,210],NSR:[66,78,90],SB:[42,48,54],ST:[110,125,140],PAC:[72,80,88],PVC:[66,75,84],VT:[140,165,190]};
