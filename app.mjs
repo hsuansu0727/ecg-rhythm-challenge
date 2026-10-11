@@ -1,6 +1,6 @@
-import {mountTreatment} from './treatment.mjs?v=12';
-import {allowedRhythms,getFindings,imageMap} from './data.mjs?v=12';
-import {ids,missions,deck,fresh,normalize,record,rateFromRRBoxes} from './core.mjs?v=12';
+import {mountTreatment} from './treatment.mjs?v=13';
+import {allowedRhythms,getFindings,imageMap} from './data.mjs?v=13';
+import {ids,missions,deck,fresh,normalize,record,rateFromRRBoxes} from './core.mjs?v=13';
 const $=s=>document.querySelector(s),app=$('#app'),KEY='ecg-challenge-v2';
 const r=id=>allowedRhythms.find(x=>x.id===id);
 const image=id=>`assets/ecg-approved/${imageMap[id]}.png`;
