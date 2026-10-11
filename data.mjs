@@ -29,7 +29,7 @@ export function fiveFindings(rate,regularity,combined,relation,id){
  let p=parts[0],qrs=parts.find(s=>/^(QRS|寬 QRS)/.test(s)),pr=parts.find(s=>s.includes('PR'));
  if(id==='PVC'&&parts[0].startsWith('寬 QRS'))p=parts[1];
  if(id==='AF'){p='無明確 P';relation='關係無法判定';}
- if(id==='PVC'){p='基礎 P 可見；提早寬 QRS 前無傳導 P';pr='基礎搏動 PR 正常且固定；提早寬 QRS 的 PR 不適用';}
+ if(id==='PVC'){p='基礎 P 可見；提早寬 QRS 前無傳導 P';qrs='寬窄都有：基礎搏動窄，提早搏動寬';pr='基礎搏動 PR 正常且固定；提早寬 QRS 的 PR 不適用';}
  if(id==='VF'){p='P 無法辨識';qrs='QRS 無法辨識';pr='PR 無法量測';}
  if(id==='AV3')pr='P、QRS 各自獨立；無固定傳導 PR';
  return [`① 速率：${rate}`,`② P 波與關係：${p}；${relation}`,`③ QRS：${qrs?.replace(/^QRS[： ]*/, '')??'無法判定'}`,`④ PR：${pr?.replace(/^PR[： ]*/, '')??'無法量測'}`,`⑤ 規則性：${regularity}`];
