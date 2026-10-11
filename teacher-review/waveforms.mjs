@@ -1,6 +1,6 @@
 // Deterministic teaching simulations. Teacher review required before quiz use.
 // Timeline: 10 s, 100 SVG units/s; one small square = .04 s / .1 mV.
-import {allowedRhythms} from '../data.mjs?v=4';
+import {allowedRhythms,fiveFindings} from '../data.mjs?v=6';
 const valid=new Set(allowedRhythms.map(x=>x.id));
 export const duration=10, scale=100, gain=40;
 const rates={NSR:[66,78,90],SB:[42,48,54],ST:[110,125,140],PAC:[72,80,88],PVC:[66,75,84],VT:[140,165,190]};
@@ -93,5 +93,9 @@ export function findings(e){
  const ventricular=hr?`心室速率約 ${hr} 次／分（${speed(hr)}，看 QRS）`:'心室率：無 QRS，無法計算';
  const rate=`${atrial}；${ventricular}`;
  const map={NSR:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],SB:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],ST:['PP、RR 規則','P 可識別；QRS < 3 小格；PR 正常且固定','P–QRS 一對一'],PAC:['提早搏動打斷 PP、RR 規則性','提早 P 形態不同；QRS 窄；提早搏動 PR 可不同','提早 P 後接窄 QRS'],PVC:['提早搏動及停頓使 RR 不規則','寬 QRS ≥ 3 小格；其前無正常傳導 P；該搏動 PR 不適用','原竇性心搏之間插入一個提早寬 QRS'],AFL:['心房活動規則；此版本 RR 規則','鋸齒狀心房波；QRS 窄；不是正常 P，PR 不適用',`規則鋸齒波，${e.ratio} 個對一個 QRS（${e.ratio}:1）`],AF:['RR 完全不規則，無重複長短模式','無可識別正常 P；QRS 窄；PR 無法量測','無明確 P，無法判定關係'],VT:['RR 規則','P 不易辨識；QRS ≥ 3 小格；PR 無法量測','連續寬 QRS；此段未畫可辨識 P，不以此斷言 AV 分離'],VF:['波形紊亂；無 PP／RR 可量測','P、QRS 無法辨識；PR 不適用','無組織化 P–QRS 關係'],AV1:['PP、RR 規則','P 可識別；QRS 窄；PR > 0.20 秒且固定','每一 P 後都有 QRS'],AV2I:['PP 規則；RR 分組而不規則','P 可識別；QRS 窄；PR 從左往右逐漸延長','PR 漸長後有 P 未接 QRS；下一週期 PR 變短'],AV2II:['PP 規則；QRS 脫落造成 RR 長間隔',`P 可識別；此版本 QRS ${e.index===0?'窄（<3 小格）':'寬（≥3 小格）'}；已傳導 PR 固定`,'突然一個 P 未接 QRS，沒有先逐漸延長 PR'],AV3:['PP、RR 各自規則，速率不同',`P 可識別（部分重疊）；此版本 QRS ${e.index===2?'窄（<3 小格）':'寬（≥3 小格）'}；PR 沒有固定值`,'P、QRS 各走各的']};
- const a=map[e.id];return [`① 速率：${rate}`,`② 規則性：${a[0]}`,`③ P／QRS／PR：${a[1]}`,`④ 心房波與 QRS：${a[2]}`];
+ const a=map[e.id];
+ const summary=fiveFindings(rate,a[0],a[1],a[2],e.id);
+ const widths=new Set(e.q.filter(q=>q.t>=0&&q.t+q.width<=duration).map(q=>q.width<.12?'窄':'寬'));
+ summary[2]=`③ QRS：${widths.size===2?'寬窄都有：基礎搏動窄，提早搏動寬':widths.has('窄')?'窄（<3 小格）':widths.has('寬')?'寬（≥3 小格）':'無法辨識'}`;
+ return summary;
 }
