@@ -22,8 +22,8 @@ for(const {id} of allowedRhythms){let paths=[];for(let i=0;i<3;i++){
  }assert.equal(new Set(paths).size,3);}
 for(const id of ['AF','AFL','AV3'])for(let i=0;i<3;i++){
  const f=findings(specimen(id,i));assert(f[0].includes('心房')&&f[0].includes('心室速率'));
- if(id==='AF')assert(f[3].includes('無法判定心房–心室傳導比例'));
- if(id==='AFL')assert(f[3].includes(`F:QRS = ${[2,3,4][i]}:1`));
+ if(id==='AF')assert(f[3].includes('無明確 P，無法判定關係'));
+ if(id==='AFL')assert(f[3].includes(`${[2,3,4][i]} 個對一個 QRS`));
 }
 assert(findings(specimen('AV3',0))[0].includes('72 次／分'));
 assert(findings(specimen('AV3',0))[0].includes('32 次／分'));

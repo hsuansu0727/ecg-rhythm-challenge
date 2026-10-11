@@ -1,4 +1,4 @@
-import {allowedRhythms,groups} from './data.mjs';
+import {allowedRhythms,groups} from './data.mjs?v=4';
 export const ids=allowedRhythms.map(r=>r.id);
 export const missions=[
  {id:'sinus',title:'01 竇性心律',desc:'比較正常、過慢與過快',ids:['NSR','SB','ST']},
